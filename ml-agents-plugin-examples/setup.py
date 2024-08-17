@@ -9,6 +9,7 @@ setup(
     #
     # Here, the get_example_stats_writer() function in mlagents_plugin_examples/example_stats_writer.py
     # will get registered with the ML_AGENTS_STATS_WRITER plugin interface.
+    
     entry_points={
         ML_AGENTS_STATS_WRITER: [
             "example=mlagents_plugin_examples.example_stats_writer:get_example_stats_writer"

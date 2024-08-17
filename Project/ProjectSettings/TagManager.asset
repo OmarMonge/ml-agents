@@ -30,6 +30,8 @@ TagManager:
   - purpleAgent
   - purpleGoal
   - tile
+  - Wall
+  - Goal
   layers:
   - Default
   - TransparentFX
@@ -37,7 +39,7 @@ TagManager:
   - 
   - Water
   - UI
-  - 
+  - Wall
   - 
   - invisible
   - 
