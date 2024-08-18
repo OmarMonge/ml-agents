@@ -131,37 +131,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 620375142107917349, guid: ce7710ec54dc49040a2163d889779f18,
-        type: 3}
-      propertyPath: area
-      value: 
-      objectReference: {fileID: 4372868913677830956, guid: 19c6d3c73e4e68243a7f6b9cffb4a1a1,
-        type: 3}
-    - target: {fileID: 620375142107917349, guid: ce7710ec54dc49040a2163d889779f18,
-        type: 3}
-      propertyPath: ground
-      value: 
-      objectReference: {fileID: 4463515571777698136, guid: 2d3be3e9c12268348a95f320d38c40be,
-        type: 3}
     - target: {fileID: 668407979940095589, guid: ce7710ec54dc49040a2163d889779f18,
         type: 3}
-      propertyPath: m_BehaviorType
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2475407033180984098, guid: ce7710ec54dc49040a2163d889779f18,
-        type: 3}
-      propertyPath: m_LocalScale.x
-      value: 0.21000001
-      objectReference: {fileID: 0}
-    - target: {fileID: 2475407033180984098, guid: ce7710ec54dc49040a2163d889779f18,
-        type: 3}
-      propertyPath: m_LocalScale.y
-      value: 0.21000001
-      objectReference: {fileID: 0}
-    - target: {fileID: 2475407033180984098, guid: ce7710ec54dc49040a2163d889779f18,
-        type: 3}
-      propertyPath: m_LocalScale.z
-      value: 0.21000001
+      propertyPath: m_BehaviorName
+      value: MazeAgent
       objectReference: {fileID: 0}
     - target: {fileID: 2475407033180984098, guid: ce7710ec54dc49040a2163d889779f18,
         type: 3}
@@ -358,7 +331,7 @@ Camera:
   m_Enabled: 1
   serializedVersion: 2
   m_ClearFlags: 1
-  m_BackGroundColor: {r: 0.19215687, g: 0.3019608, b: 0.4745098, a: 0}
+  m_BackGroundColor: {r: 0.82702917, g: 0.89062685, b: 0.990566, a: 0}
   m_projectionMatrixMode: 1
   m_GateFitMode: 2
   m_FOVAxisMode: 0
@@ -453,9 +426,10 @@ MonoBehaviour:
     type: 3}
   agentPrefab: {fileID: 6123785093853168365, guid: ce7710ec54dc49040a2163d889779f18,
     type: 3}
-  gridSize: 8
-  startCell: {x: 0, y: 0}
-  goalCell: {x: 0, y: 0}
+  gridSize: 4
+  numberOfMazes: 6
+  startCells: []
+  goalCells: []
 --- !u!4 &1213101479
 Transform:
   m_ObjectHideFlags: 0
@@ -710,12 +684,9 @@ MonoBehaviour:
     maxStep: 0
   hasUpgradedFromAgentParameters: 1
   MaxStep: 0
-  ground: {fileID: 0}
-  area: {fileID: 0}
-  goal: {fileID: 0}
-  useVectorObs: 0
   moveSpeed: 1
   rotateSpeed: 150
+  moveCooldown: 0.5
 --- !u!114 &2113959999
 MonoBehaviour:
   m_ObjectHideFlags: 0
