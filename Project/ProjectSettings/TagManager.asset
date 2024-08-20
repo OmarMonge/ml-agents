@@ -32,6 +32,9 @@ TagManager:
   - tile
   - Wall
   - Goal
+  - Start0
+  - Start1
+  - Goal0
   layers:
   - Default
   - TransparentFX

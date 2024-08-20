@@ -744,8 +744,1289 @@ public class MazeAgent : Agent
 //     private float stuckTime = 0f;
 // }
 
-using System.Collections.Generic;
+// using System.Collections.Generic;
+// using System.Collections;
+// using UnityEngine;
+// using Unity.MLAgents;
+// using Unity.MLAgents.Actuators;
+// using Unity.MLAgents.Sensors;
+
+// public class MazeAgent : Agent
+// {
+//     public float moveSpeed = 5f;
+//     public float rotateSpeed = 180f;
+//     public float moveCooldown = 0.01f; // Adjust this value to control movement speed
+// private float lastMoveTime = 0f;
+
+//     private Rigidbody m_AgentRb;
+//     private MazeGenerator m_MazeGenerator;
+//     private StatsRecorder m_statsRecorder;
+//     private int mazeIndex;
+//     private Vector2Int currentCell;
+//     private HashSet<Vector2Int> visitedPositions = new HashSet<Vector2Int>();
+
+//     public override void Initialize()
+//     {
+//         m_AgentRb = GetComponent<Rigidbody>();
+//         m_statsRecorder = Academy.Instance.StatsRecorder;
+//     }
+
+//     public void SetupAgent(int index, MazeGenerator generator)
+//     {
+//         mazeIndex = index;
+//         m_MazeGenerator = generator;
+//     }
+
+//     public override void OnEpisodeBegin()
+//     {
+//         if (m_MazeGenerator == null)
+//         {
+//             Debug.LogError("MazeGenerator is not set. Make sure SetupAgent is called before starting the episode.");
+//             return;
+//         }
+
+//         visitedPositions.Clear();
+//         currentCell = m_MazeGenerator.GetStartCell(mazeIndex);
+//         transform.position = CellToWorldPosition(currentCell);
+//         transform.rotation = Quaternion.identity;
+
+//         if (m_AgentRb != null)
+//         {
+//             m_AgentRb.velocity = Vector3.zero;
+//             m_AgentRb.angularVelocity = Vector3.zero;
+//         }
+//         else
+//         {
+//             Debug.LogWarning("Rigidbody component is missing on the agent.");
+//         }
+
+//         m_statsRecorder.Add("Goal/Reached", 0, StatAggregationMethod.Sum);
+
+//         Debug.Log($"Episode started. Start cell: {currentCell}, Position: {transform.position}");
+//     }
+
+//     public override void CollectObservations(VectorSensor sensor)
+//     {
+//         // Add observations here if needed
+//         sensor.AddObservation(transform.position);
+//         sensor.AddObservation(transform.forward);
+//         Vector2Int goalCell = m_MazeGenerator.GetGoalCell(mazeIndex);
+//         sensor.AddObservation((Vector2)goalCell - (Vector2)currentCell);
+//     }
+//     private List<Vector2Int> GetValidAdjacentCells(Vector2Int cell)
+// {
+//     List<Vector2Int> validMoves = new List<Vector2Int>();
+//     Vector2Int[] directions = { Vector2Int.up, Vector2Int.down, Vector2Int.left, Vector2Int.right };
+
+//     foreach (Vector2Int dir in directions)
+//     {
+//         Vector2Int adjacentCell = cell + dir;
+//         if (m_MazeGenerator.IsValidMove(cell, adjacentCell, mazeIndex))
+//         {
+//             validMoves.Add(adjacentCell);
+//         }
+//     }
+
+//     return validMoves;
+// }
+
+// //     public override void OnActionReceived(ActionBuffers actionBuffers)
+// // {
+// //     int action = actionBuffers.DiscreteActions[0];
+// //     Vector2Int moveDir = Vector2Int.zero;
+// //     float rotateAmount = 0f;
+
+// //     switch (action)
+// //     {
+// //         case 0: moveDir = Vector2Int.up; break;    // Forward
+// //         case 1: moveDir = Vector2Int.down; break;  // Backward
+// //         case 2: moveDir = Vector2Int.left; break;  // Left
+// //         case 3: moveDir = Vector2Int.right; break; // Right
+// //         case 4: rotateAmount = -1f; break;         // Rotate left
+// //         case 5: rotateAmount = 1f; break;          // Rotate right
+// //         case 6: break; // No action
+// //         default: Debug.LogWarning($"Unexpected action value: {action}"); break;
+// //     }
+
+// //     Vector2Int previousCell = currentCell;
+// //     float previousDistanceToGoal = Vector2Int.Distance(previousCell, m_MazeGenerator.GetGoalCell(mazeIndex));
+
+// //     // Move
+// //     if (moveDir != Vector2Int.zero)
+// //     {
+// //         Vector2Int newCell = currentCell + moveDir;
+// //         bool isValidMove = m_MazeGenerator.IsValidMove(currentCell, newCell, mazeIndex);
+
+// //         Vector3 startPos = CellToWorldPosition(currentCell);
+// //         Vector3 endPos = CellToWorldPosition(newCell);
+// //         Debug.DrawLine(startPos, endPos, isValidMove ? Color.green : Color.red, 0.5f);
+
+// //         if (isValidMove)
+// //         {
+// //             currentCell = newCell;
+// //             Vector3 newPosition = CellToWorldPosition(currentCell);
+// //             transform.position = newPosition;
+// //             m_AgentRb.MovePosition(newPosition);
+
+// //             if (!visitedPositions.Contains(currentCell))
+// //             {
+// //                 visitedPositions.Add(currentCell);
+// //                 AddReward(0.05f);
+// //                 Debug.Log("Visited new position!");
+// //             }
+
+// //             float currentDistanceToGoal = Vector2Int.Distance(currentCell, m_MazeGenerator.GetGoalCell(mazeIndex));
+// //             float distanceReward = previousDistanceToGoal - currentDistanceToGoal;
+// //             AddReward(distanceReward * 0.1f);
+
+// //             if (currentCell == m_MazeGenerator.GetGoalCell(mazeIndex))
+// //             {
+// //                 SetReward(1f);
+// //                 m_statsRecorder.Add("Goal/Reached", 1, StatAggregationMethod.Sum);
+// //                 EndEpisode();
+// //             }
+// //         }
+// //         else
+// //         {
+// //             AddReward(-0.2f); // Penalty for hitting a wall
+// //             Debug.Log($"Hit Wall! Attempted move from {currentCell} to {newCell}");
+// //         }
+// //     }
+
+// //     // Rotate
+// //     if (rotateAmount != 0f)
+// //     {
+// //         float rotationAngle = rotateAmount * rotateSpeed * Time.fixedDeltaTime;
+// //         transform.Rotate(0f, rotationAngle, 0f);
+// //     }
+
+// //     // Small penalty for each step to encourage efficiency
+// //     AddReward(-0.01f);
+
+// //     Debug.Log($"Action: {action}, Move: {moveDir}, Rotate: {rotateAmount}, CurrentCell: {currentCell}, Position: {transform.position}, Reward: {GetCumulativeReward()}");
+// // }
+// // 
+
+// public override void OnActionReceived(ActionBuffers actionBuffers)
+// {
+//     // Check if we're still in cooldown
+//     if (Time.time - lastMoveTime < moveCooldown)
+//     {
+//         return;
+//     }
+
+//     int action = actionBuffers.DiscreteActions[0];
+//     Vector2Int moveDir = Vector2Int.zero;
+//     bool isRotateAction = false;
+
+//     switch (action)
+//     {
+//         case 0: moveDir = Vector2Int.up; break;    // Forward
+//         case 1: moveDir = Vector2Int.down; break;  // Backward
+//         case 2: moveDir = Vector2Int.left; break;  // Left
+//         case 3: moveDir = Vector2Int.right; break; // Right
+//         case 4: // Rotate left
+//         case 5: // Rotate right
+//             isRotateAction = true;
+//             break;
+//         case 6: break; // No action
+//         default:
+//             Debug.LogWarning($"Unexpected action value: {action}");
+//             return;
+//     }
+
+//     bool actionTaken = false;
+
+//     if (moveDir != Vector2Int.zero)
+//     {
+//         Vector2Int newCell = currentCell + moveDir;
+//         bool isValidMove = m_MazeGenerator.IsValidMove(currentCell, newCell, mazeIndex);
+
+//         Vector3 startPos = CellToWorldPosition(currentCell);
+//         Vector3 endPos = CellToWorldPosition(newCell);
+//         Debug.DrawLine(startPos, endPos, isValidMove ? Color.green : Color.red, moveCooldown);
+
+//         if (isValidMove)
+//         {
+//             currentCell = newCell;
+//             Vector3 newPosition = CellToWorldPosition(currentCell);
+//             transform.position = newPosition;
+//             m_AgentRb.MovePosition(newPosition);
+//             actionTaken = true;
+
+//             if (!visitedPositions.Contains(currentCell))
+//             {
+//                 visitedPositions.Add(currentCell);
+//                 AddReward(0.05f);
+//                 Debug.Log("Visited new position!");
+//             }
+
+//             float distanceToGoal = Vector2Int.Distance(currentCell, m_MazeGenerator.GetGoalCell(mazeIndex));
+//             float distanceReward = -distanceToGoal * 0.01f; // Small reward based on distance to goal
+//             AddReward(distanceReward);
+
+//             if (currentCell == m_MazeGenerator.GetGoalCell(mazeIndex))
+//             {
+//                 SetReward(1f);
+//                 m_statsRecorder.Add("Goal/Reached", 1, StatAggregationMethod.Sum);
+//                 EndEpisode();
+//             }
+//         }
+//         else
+//         {
+//             AddReward(-0.2f); // Penalty for hitting a wall
+//             Debug.Log($"Hit Wall! Attempted move from {currentCell} to {newCell}");
+//         }
+//     }
+//     else if (isRotateAction)
+//     {
+//         float rotationAngle = (action == 4) ? -90f : 90f;
+//         transform.Rotate(0f, rotationAngle, 0f);
+//         actionTaken = true;
+//         AddReward(-0.01f); // Small penalty for rotation to discourage unnecessary spinning
+//     }
+
+//     if (actionTaken)
+//     {
+//         lastMoveTime = Time.time;
+//         AddReward(-0.01f); // Small penalty for each action to encourage efficiency
+//     }
+
+//     // Debugging information
+//     Debug.Log($"Action: {action}, CurrentCell: {currentCell}, Position: {transform.position}, " +
+//               $"Rotation: {transform.eulerAngles.y}, Reward: {GetCumulativeReward()}, " +
+//               $"Distance to Goal: {Vector2Int.Distance(currentCell, m_MazeGenerator.GetGoalCell(mazeIndex))}");
+// }
+
+// public override void Heuristic(in ActionBuffers actionsOut)
+// {
+//     var discreteActionsOut = actionsOut.DiscreteActions;
+//     discreteActionsOut[0] = 6; // Default to no action
+
+//     if (Time.time - lastMoveTime >= moveCooldown)
+//     {
+//         if (Input.GetKeyDown(KeyCode.W)) discreteActionsOut[0] = 0;
+//         else if (Input.GetKeyDown(KeyCode.S)) discreteActionsOut[0] = 1;
+//         else if (Input.GetKeyDown(KeyCode.A)) discreteActionsOut[0] = 2;
+//         else if (Input.GetKeyDown(KeyCode.D)) discreteActionsOut[0] = 3;
+//         else if (Input.GetKeyDown(KeyCode.Q)) discreteActionsOut[0] = 4;
+//         else if (Input.GetKeyDown(KeyCode.E)) discreteActionsOut[0] = 5;
+//     }
+
+//     if (discreteActionsOut[0] != 6)
+//     {
+//         Debug.Log($"Heuristic called. Action: {discreteActionsOut[0]}");
+//     }
+// }
+// private Vector3 CellToWorldPosition(Vector2Int cell)
+// {
+//     return new Vector3(
+//         cell.x + (mazeIndex * (m_MazeGenerator.gridSize + 1)),
+//         0.5f, // Fixed height
+//         cell.y
+//     );
+// }
+
+//     private Vector2Int WorldPositionToCell(Vector3 worldPosition)
+//     {
+//         return new Vector2Int(
+//             Mathf.RoundToInt(worldPosition.x - (mazeIndex * (m_MazeGenerator.gridSize + 1))),
+//             Mathf.RoundToInt(worldPosition.z)
+//         );
+//     }
+
+// private void FixedUpdate()
+// {
+//     // Ensure the agent stays aligned to the grid
+//     Vector3 snappedPosition = CellToWorldPosition(currentCell);
+//     transform.position = snappedPosition;
+//     m_AgentRb.MovePosition(snappedPosition);
+
+//     // Unstuck mechanism (if needed)
+//     if (m_AgentRb.velocity.magnitude < 0.01f)
+//     {
+//         stuckTime += Time.fixedDeltaTime;
+//         if (stuckTime > 3f)
+//         {
+//             Vector2Int randomDirection = new Vector2Int(Random.Range(-1, 2), Random.Range(-1, 2));
+//             Vector2Int newCell = currentCell + randomDirection;
+//             if (m_MazeGenerator.IsValidMove(currentCell, newCell, mazeIndex))
+//             {
+//                 currentCell = newCell;
+//                 transform.position = CellToWorldPosition(currentCell);
+//                 m_AgentRb.MovePosition(transform.position);
+//                 stuckTime = 0f;
+//                 Debug.Log("Agent unstuck!");
+//             }
+//         }
+//     }
+//     else
+//     {
+//         stuckTime = 0f;
+//     }
+// }
+
+//     private float stuckTime = 0f;
+// }
+
+// using System.Collections.Generic;
+// using UnityEngine;
+// using Unity.MLAgents;
+// using Unity.MLAgents.Actuators;
+// using Unity.MLAgents.Sensors;
+
+// public class MazeAgent : Agent
+// {
+//     public float moveSpeed = 1f;
+//     public float rotateSpeed = 180f;
+//     public float moveCooldown = 0.01f;
+//     private float lastMoveTime = 0f;
+
+//       public GameObject goalObject; // Reference to the goal object in the scene
+//     private bool reachedGoal = false;
+//     private Rigidbody m_AgentRb;
+//     private MazeGenerator m_MazeGenerator;
+//     private StatsRecorder m_statsRecorder;
+//     private int mazeIndex;
+//     private Vector2Int currentCell;
+//     private HashSet<Vector2Int> visitedPositions = new HashSet<Vector2Int>();
+
+//     public override void Initialize()
+//     {
+//         m_AgentRb = GetComponent<Rigidbody>();
+//         m_statsRecorder = Academy.Instance.StatsRecorder;
+//     }
+
+//     public void SetupAgent(int index, MazeGenerator generator)
+//     {
+//         mazeIndex = index;
+//         m_MazeGenerator = generator;
+//     }
+
+//     public override void OnEpisodeBegin()
+//     {
+//         if (m_MazeGenerator == null)
+//         {
+//             Debug.LogError("MazeGenerator is not set. Make sure SetupAgent is called before starting the episode.");
+//             return;
+//         }
+
+//         ResetAgent();
+//        // episodeEnded = false;
+//         Debug.Log("New episode started.");
+//     }
+
+
+//     public void ResetAgent()
+//     {
+//         visitedPositions.Clear();
+//         currentCell = m_MazeGenerator.GetStartCell(mazeIndex);
+//         transform.position = CellToWorldPosition(currentCell);
+//         transform.rotation = Quaternion.identity;
+
+//         if (m_AgentRb != null)
+//         {
+//             m_AgentRb.velocity = Vector3.zero;
+//             m_AgentRb.angularVelocity = Vector3.zero;
+//         }
+
+//         m_statsRecorder.Add("Goal/Reached", 0, StatAggregationMethod.Sum);
+//         lastMoveTime = Time.time - moveCooldown;
+
+//         Debug.Log($"Agent reset. Start cell: {currentCell}, Goal cell: {m_MazeGenerator.GetGoalCell(mazeIndex)}");
+//     }
+
+//     public override void CollectObservations(VectorSensor sensor)
+//     {
+//         sensor.AddObservation(transform.position);
+//         sensor.AddObservation(transform.forward);
+//         Vector2Int goalCell = m_MazeGenerator.GetGoalCell(mazeIndex);
+//         sensor.AddObservation((Vector2)goalCell - (Vector2)currentCell);
+//     }
+
+//     public override void OnActionReceived(ActionBuffers actionBuffers)
+//     {
+//         if (Time.time - lastMoveTime < moveCooldown)
+//         {
+//             return;
+//         }
+
+//         int action = actionBuffers.DiscreteActions[0];
+//         Vector2Int moveDir = Vector2Int.zero;
+//         bool isRotateAction = false;
+
+//         switch (action)
+//         {
+//             case 0: moveDir = Vector2Int.up; break;
+//             case 1: moveDir = Vector2Int.down; break;
+//             case 2: moveDir = Vector2Int.left; break;
+//             case 3: moveDir = Vector2Int.right; break;
+//             case 4:
+//             case 5:
+//                 isRotateAction = true;
+//                 break;
+//             case 6: break;
+//             default:
+//                 Debug.LogWarning($"Unexpected action value: {action}");
+//                 return;
+//         }
+
+//         bool actionTaken = false;
+
+//         if (moveDir != Vector2Int.zero)
+//         {
+//             Vector2Int newCell = currentCell + moveDir;
+//             bool isValidMove = m_MazeGenerator.IsValidMove(currentCell, newCell, mazeIndex);
+
+//             Vector3 startPos = CellToWorldPosition(currentCell);
+//             Vector3 endPos = CellToWorldPosition(newCell);
+//             Debug.DrawLine(startPos, endPos, isValidMove ? Color.green : Color.red, moveCooldown);
+
+//             if (isValidMove)
+//             {
+//                 currentCell = newCell;
+//                 Vector3 newPosition = CellToWorldPosition(currentCell);
+//                 transform.position = newPosition;
+//                 m_AgentRb.MovePosition(newPosition);
+//                 actionTaken = true;
+
+//                 if (!visitedPositions.Contains(currentCell))
+//                 {
+//                     visitedPositions.Add(currentCell);
+//                     AddReward(0.05f);
+//                     Debug.Log("Visited new position!");
+//                 }
+
+//                 float distanceToGoal = Vector2Int.Distance(currentCell, m_MazeGenerator.GetGoalCell(mazeIndex));
+//                 float distanceReward = -distanceToGoal * 0.01f;
+//                 AddReward(distanceReward);
+
+//                 if (currentCell == m_MazeGenerator.GetGoalCell(mazeIndex))
+//                 {
+//                     SetReward(1f);
+//                      Debug.Log("<color=green>GOAL REACHED! Ending episode.</color>");
+//                     m_statsRecorder.Add("Goal/Reached", 1, StatAggregationMethod.Sum);
+//                     EndEpisode();
+//                 }
+//             }
+//             else
+//             {
+//                 AddReward(-0.2f);
+//                 Debug.Log($"Hit Wall! Attempted move from {currentCell} to {newCell}");
+//             }
+//         }
+//         else if (isRotateAction)
+//         {
+//             float rotationAngle = (action == 4) ? -90f : 90f;
+//             transform.Rotate(0f, rotationAngle, 0f);
+//             actionTaken = true;
+//             AddReward(-0.01f);
+//         }
+
+//         if (actionTaken)
+//         {
+//             lastMoveTime = Time.time;
+//             AddReward(-0.01f);
+//                         // Check for goal after movement
+//             CheckForGoal();
+//         }
+
+//         Debug.Log($"Action: {action}, CurrentCell: {currentCell}, Position: {transform.position}, " +
+//                   $"Rotation: {transform.eulerAngles.y}, Reward: {GetCumulativeReward()}, " +
+//                   $"Distance to Goal: {Vector2Int.Distance(currentCell, m_MazeGenerator.GetGoalCell(mazeIndex))}");
+//     }
+
+//     private void CheckForGoal()
+//     {
+//         if (reachedGoal) return;
+
+//         if (currentCell == m_MazeGenerator.GetGoalCell(mazeIndex) || IsAtGoal())
+//         {
+//             reachedGoal = true;
+//             Debug.Log("<color=green>GOAL REACHED! Ending episode.</color>");
+//             SetReward(1f);
+//             m_statsRecorder.Add("Goal/Reached", 1, StatAggregationMethod.Sum);
+//             EndEpisode();
+//         }
+//     }
+
+//     private bool IsAtGoal()
+//     {
+//         if (goalObject == null) return false;
+
+//         float distanceToGoal = Vector3.Distance(transform.position, goalObject.transform.position);
+//         return distanceToGoal < 0.5f; // Adjust this threshold as needed
+//     }
+
+//     private void OnTriggerEnter(Collider other)
+//     {
+//         if (other.gameObject == goalObject)
+//         {
+//             reachedGoal = true;
+//             Debug.Log("<color=blue>GOAL REACHED via Trigger!</color>");
+//             SetReward(1f);
+//             m_statsRecorder.Add("Goal/Reached", 1, StatAggregationMethod.Sum);
+//             EndEpisode();
+//         }
+//     }
+
+//     public override void Heuristic(in ActionBuffers actionsOut)
+//     {
+//         var discreteActionsOut = actionsOut.DiscreteActions;
+//         discreteActionsOut[0] = 6;
+
+//         if (Time.time - lastMoveTime >= moveCooldown)
+//         {
+//             if (Input.GetKeyDown(KeyCode.W)) discreteActionsOut[0] = 0;
+//             else if (Input.GetKeyDown(KeyCode.S)) discreteActionsOut[0] = 1;
+//             else if (Input.GetKeyDown(KeyCode.A)) discreteActionsOut[0] = 2;
+//             else if (Input.GetKeyDown(KeyCode.D)) discreteActionsOut[0] = 3;
+//             else if (Input.GetKeyDown(KeyCode.Q)) discreteActionsOut[0] = 4;
+//             else if (Input.GetKeyDown(KeyCode.E)) discreteActionsOut[0] = 5;
+//         }
+
+//         if (discreteActionsOut[0] != 6)
+//         {
+//             Debug.Log($"Heuristic called. Action: {discreteActionsOut[0]}");
+//         }
+//     }
+
+//     private Vector3 CellToWorldPosition(Vector2Int cell)
+//     {
+//         return new Vector3(
+//             cell.x + (mazeIndex * (m_MazeGenerator.gridSize + 1)),
+//             0.5f,
+//             cell.y
+//         );
+//     }
+
+//     private Vector2Int WorldPositionToCell(Vector3 worldPosition)
+//     {
+//         return new Vector2Int(
+//             Mathf.RoundToInt(worldPosition.x - (mazeIndex * (m_MazeGenerator.gridSize + 1))),
+//             Mathf.RoundToInt(worldPosition.z)
+//         );
+//     }
+
+//     private void FixedUpdate()
+//     {
+//         Vector3 snappedPosition = CellToWorldPosition(currentCell);
+//         transform.position = snappedPosition;
+//         m_AgentRb.MovePosition(snappedPosition);
+//     }
+// }
+
+// using System.Collections.Generic;
+// using UnityEngine;
+// using Unity.MLAgents;
+// using Unity.MLAgents.Actuators;
+// using Unity.MLAgents.Sensors;
+
+// public class MazeAgent : Agent
+// {
+//     public float moveSpeed = 1f;
+//     public float rotateSpeed = 180f;
+//     public float moveCooldown = 0.01f;
+//     private float lastMoveTime = 0f;
+
+//     public GameObject goalObject; // Reference to the goal object in the scene
+//     private bool reachedGoal = false;
+//     private bool episodeEnded = false;
+//     private Rigidbody m_AgentRb;
+//     private MazeGenerator m_MazeGenerator;
+//     private StatsRecorder m_statsRecorder;
+//     private int mazeIndex;
+//     private Vector2Int currentCell;
+//     private HashSet<Vector2Int> visitedPositions = new HashSet<Vector2Int>();
+
+//     public override void Initialize()
+//     {
+//         m_AgentRb = GetComponent<Rigidbody>();
+//         m_statsRecorder = Academy.Instance.StatsRecorder;
+//     }
+
+//     public void SetupAgent(int index, MazeGenerator generator)
+//     {
+//         mazeIndex = index;
+//         m_MazeGenerator = generator;
+//     }
+
+//     public override void OnEpisodeBegin()
+//     {
+//         if (m_MazeGenerator == null)
+//         {
+//             Debug.LogError("MazeGenerator is not set. Make sure SetupAgent is called before starting the episode.");
+//             return;
+//         }
+
+//         ResetAgent();
+//         episodeEnded = false;
+//         reachedGoal = false;
+//         Debug.Log("New episode started.");
+//     }
+
+//     public void ResetAgent()
+//     {
+//         visitedPositions.Clear();
+//         currentCell = m_MazeGenerator.GetStartCell(mazeIndex);
+//         transform.position = CellToWorldPosition(currentCell);
+//         transform.rotation = Quaternion.identity;
+
+//         if (m_AgentRb != null)
+//         {
+//             m_AgentRb.velocity = Vector3.zero;
+//             m_AgentRb.angularVelocity = Vector3.zero;
+//         }
+
+//         m_statsRecorder.Add("Goal/Reached", 0, StatAggregationMethod.Sum);
+//         lastMoveTime = Time.time - moveCooldown;
+
+//         Debug.Log($"Agent reset. Start cell: {currentCell}, Goal cell: {m_MazeGenerator.GetGoalCell(mazeIndex)}");
+//     }
+
+//     public override void CollectObservations(VectorSensor sensor)
+//     {
+//         sensor.AddObservation(transform.position);
+//         sensor.AddObservation(transform.forward);
+//         Vector2Int goalCell = m_MazeGenerator.GetGoalCell(mazeIndex);
+//         sensor.AddObservation((Vector2)goalCell - (Vector2)currentCell);
+//     }
+
+//     public override void OnActionReceived(ActionBuffers actionBuffers)
+//     {
+//         if (episodeEnded || Time.time - lastMoveTime < moveCooldown)
+//         {
+//             return;
+//         }
+
+//         int action = actionBuffers.DiscreteActions[0];
+//         Vector2Int moveDir = Vector2Int.zero;
+//         bool isRotateAction = false;
+
+//         switch (action)
+//         {
+//             case 0: moveDir = Vector2Int.up; break;
+//             case 1: moveDir = Vector2Int.down; break;
+//             case 2: moveDir = Vector2Int.left; break;
+//             case 3: moveDir = Vector2Int.right; break;
+//             case 4:
+//             case 5:
+//                 isRotateAction = true;
+//                 break;
+//             case 6: break;
+//             default:
+//                 Debug.LogWarning($"Unexpected action value: {action}");
+//                 return;
+//         }
+
+//         bool actionTaken = false;
+
+//         if (moveDir != Vector2Int.zero)
+//         {
+//             Vector2Int newCell = currentCell + moveDir;
+//             bool isValidMove = m_MazeGenerator.IsValidMove(currentCell, newCell, mazeIndex);
+
+//             Vector3 startPos = CellToWorldPosition(currentCell);
+//             Vector3 endPos = CellToWorldPosition(newCell);
+//             Debug.DrawLine(startPos, endPos, isValidMove ? Color.green : Color.red, moveCooldown);
+
+//             if (isValidMove)
+//             {
+//                 currentCell = newCell;
+//                 Vector3 newPosition = CellToWorldPosition(currentCell);
+//                 transform.position = newPosition;
+//                 m_AgentRb.MovePosition(newPosition);
+//                 actionTaken = true;
+
+//                 if (!visitedPositions.Contains(currentCell))
+//                 {
+//                     visitedPositions.Add(currentCell);
+//                     AddReward(0.05f);
+//                     Debug.Log("Visited new position!");
+//                 }
+
+//                 float distanceToGoal = Vector2Int.Distance(currentCell, m_MazeGenerator.GetGoalCell(mazeIndex));
+//                 float distanceReward = -distanceToGoal * 0.01f;
+//                 AddReward(distanceReward);
+
+//                 CheckForGoal();
+//             }
+//             else
+//             {
+//                 AddReward(-0.2f);
+//                 Debug.Log($"Hit Wall! Attempted move from {currentCell} to {newCell}");
+//             }
+//         }
+//         else if (isRotateAction)
+//         {
+//             float rotationAngle = (action == 4) ? -90f : 90f;
+//             transform.Rotate(0f, rotationAngle, 0f);
+//             actionTaken = true;
+//             AddReward(-0.01f);
+//         }
+
+//         if (actionTaken)
+//         {
+//             lastMoveTime = Time.time;
+//             AddReward(-0.01f);
+//         }
+
+//         Debug.Log($"Action: {action}, CurrentCell: {currentCell}, Position: {transform.position}, " +
+//                   $"Rotation: {transform.eulerAngles.y}, Reward: {GetCumulativeReward()}, " +
+//                   $"Distance to Goal: {Vector2Int.Distance(currentCell, m_MazeGenerator.GetGoalCell(mazeIndex))}");
+//     }
+
+//     private void CheckForGoal()
+//     {
+//         if (reachedGoal) return;
+
+//         if (currentCell == m_MazeGenerator.GetGoalCell(mazeIndex) || IsAtGoal())
+//         {
+//             reachedGoal = true;
+//             episodeEnded = true;
+//             Debug.Log("<color=green>GOAL REACHED! Ending episode.</color>");
+//             SetReward(1f);
+//             m_statsRecorder.Add("Goal/Reached", 1, StatAggregationMethod.Sum);
+//             EndEpisode();
+//         }
+//     }
+
+//     private bool IsAtGoal()
+//     {
+//         if (goalObject == null) return false;
+
+//         float distanceToGoal = Vector3.Distance(transform.position, goalObject.transform.position);
+//         return distanceToGoal < 0.5f; // Adjust this threshold as needed
+//     }
+
+//     private void OnTriggerEnter(Collider other)
+//     {
+//         if (other.gameObject == goalObject && !reachedGoal)
+//         {
+//             reachedGoal = true;
+//             episodeEnded = true;
+//             Debug.Log("<color=blue>GOAL REACHED via Trigger!</color>");
+//             SetReward(1f);
+//             m_statsRecorder.Add("Goal/Reached", 1, StatAggregationMethod.Sum);
+//             EndEpisode();
+//         }
+//     }
+
+//     public override void Heuristic(in ActionBuffers actionsOut)
+//     {
+//         var discreteActionsOut = actionsOut.DiscreteActions;
+//         discreteActionsOut[0] = 6;
+
+//         if (Time.time - lastMoveTime >= moveCooldown)
+//         {
+//             if (Input.GetKeyDown(KeyCode.W)) discreteActionsOut[0] = 0;
+//             else if (Input.GetKeyDown(KeyCode.S)) discreteActionsOut[0] = 1;
+//             else if (Input.GetKeyDown(KeyCode.A)) discreteActionsOut[0] = 2;
+//             else if (Input.GetKeyDown(KeyCode.D)) discreteActionsOut[0] = 3;
+//             else if (Input.GetKeyDown(KeyCode.Q)) discreteActionsOut[0] = 4;
+//             else if (Input.GetKeyDown(KeyCode.E)) discreteActionsOut[0] = 5;
+//         }
+
+//         if (discreteActionsOut[0] != 6)
+//         {
+//             Debug.Log($"Heuristic called. Action: {discreteActionsOut[0]}");
+//         }
+//     }
+
+//     private Vector3 CellToWorldPosition(Vector2Int cell)
+//     {
+//         return new Vector3(
+//             cell.x + (mazeIndex * (m_MazeGenerator.gridSize + 1)),
+//             0.5f,
+//             cell.y
+//         );
+//     }
+
+//     private Vector2Int WorldPositionToCell(Vector3 worldPosition)
+//     {
+//         return new Vector2Int(
+//             Mathf.RoundToInt(worldPosition.x - (mazeIndex * (m_MazeGenerator.gridSize + 1))),
+//             Mathf.RoundToInt(worldPosition.z)
+//         );
+//     }
+
+//     private void FixedUpdate()
+//     {
+//         Vector3 snappedPosition = CellToWorldPosition(currentCell);
+//         transform.position = snappedPosition;
+//         m_AgentRb.MovePosition(snappedPosition);
+//     }
+// }
+
+// using System.Collections;
+// using System.Collections.Generic;
+// using UnityEngine;
+// using Unity.MLAgents;
+// using Unity.MLAgents.Actuators;
+// using Unity.MLAgents.Sensors;
+
+// public class MazeAgent : Agent
+// {
+//     public float moveDuration = 0.5f; // Time to move one cell
+//     public GameObject goalObject;
+//     public bool verboseDebug = true;
+
+//     public RayPerceptionSensorComponent3D raySensor;
+//     private Rigidbody m_AgentRb;
+//     private MazeGenerator m_MazeGenerator;
+//     private StatsRecorder m_statsRecorder;
+//     private int mazeIndex;
+//     private Vector2Int currentCell;
+//     private HashSet<Vector2Int> visitedPositions = new HashSet<Vector2Int>();
+//     private bool isMoving = false;
+//     private bool reachedGoal = false;
+//     private bool episodeEnded = false;
+//     private float previousDistanceToGoal;
+
+// public override void Initialize()
+//     {
+//         m_AgentRb = GetComponent<Rigidbody>();
+//         m_statsRecorder = Academy.Instance.StatsRecorder;
+        
+//         // Lock rotation of the Rigidbody
+//         if (m_AgentRb != null)
+//         {
+//             m_AgentRb.freezeRotation = true;
+//         }
+//     }
+
+//     public void SetupAgent(int index, MazeGenerator generator)
+//     {
+//         mazeIndex = index;
+//         m_MazeGenerator = generator;
+//     }
+
+//     public override void OnEpisodeBegin()
+//     {
+//         if (m_MazeGenerator == null)
+//         {
+//             Debug.LogError("MazeGenerator is not set. Make sure SetupAgent is called before starting the episode.");
+//             return;
+//         }
+
+//         ResetAgent();
+//         episodeEnded = false;
+//         reachedGoal = false;
+//         ForceLog("New episode started.");
+//         previousDistanceToGoal = Vector2Int.Distance(currentCell, m_MazeGenerator.GetGoalCell(mazeIndex));
+  
+//     }
+
+//     public void ResetAgent()
+//     {
+//         StopAllCoroutines();
+//         isMoving = false;
+//         visitedPositions.Clear();
+//         currentCell = m_MazeGenerator.GetStartCell(mazeIndex);
+//         transform.position = CellToWorldPosition(currentCell);
+//         transform.rotation = Quaternion.identity;
+//             // Reset rotation to face forward (adjust the Y value if needed)
+//         transform.rotation = Quaternion.Euler(0f, 0f, 0f);  
+
+//         if (m_AgentRb != null)
+//         {
+//             m_AgentRb.velocity = Vector3.zero;
+//             m_AgentRb.angularVelocity = Vector3.zero;
+//         }
+
+//         m_statsRecorder.Add("Goal/Reached", 0, StatAggregationMethod.Sum);
+
+//         ForceLog($"Agent reset. Start cell: {currentCell}, Goal cell: {m_MazeGenerator.GetGoalCell(mazeIndex)}");
+//     }
+
+//     // public override void CollectObservations(VectorSensor sensor)
+//     // {
+//     //     sensor.AddObservation(transform.position);
+//     //     sensor.AddObservation(transform.forward);
+//     //     Vector2Int goalCell = m_MazeGenerator.GetGoalCell(mazeIndex);
+//     //     sensor.AddObservation((Vector2)goalCell - (Vector2)currentCell);
+//     // }
+//     public override void CollectObservations(VectorSensor sensor)
+//     {
+
+//         if (goalObject != null)
+//         {
+//             Vector3 relativePosition = goalObject.transform.localPosition - transform.localPosition;
+//             sensor.AddObservation(relativePosition);
+//         }
+
+//         // Add the agent's position
+//         sensor.AddObservation(transform.localPosition);
+
+//         // Add the relative position of the goal
+//         Vector3 relativeGoalPosition = goalObject.transform.localPosition - transform.localPosition;
+//         sensor.AddObservation(relativeGoalPosition);
+
+//         // The ray perception results are automatically collected by ML-Agents
+//     }
+//     private void InterpretRayPerceptionOutput()
+//     {
+//         if (raySensor == null)
+//         {
+//             Debug.LogError("Ray Perception Sensor is not assigned!");
+//             return;
+//         }
+
+//         var rayOutputs = raySensor.RaySensor.RayPerceptionOutput;
+
+//         for (int i = 0; i < rayOutputs.RayOutputs.Length; i++)
+//         {
+//             var rayOutput = rayOutputs.RayOutputs[i];
+
+//             if (rayOutput.HasHit)
+//             {
+//                 string hitObjectTag = rayOutput.HitGameObject.tag;
+//                 float hitDistance = rayOutput.HitFraction;
+
+//                 switch (hitObjectTag)
+//                 {
+//                     case "Wall":
+//                         // Logic for detecting walls
+//                         ForceLog($"Ray {i} hit a wall at distance {hitDistance}");
+//                         break;
+//                     case "Goal":
+//                         // Logic for detecting the goal
+//                         ForceLog($"Ray {i} hit the goal at distance {hitDistance}");
+//                         break;
+//                     // Add more cases as needed for other objects in your maze
+//                 }
+//             }
+//         }
+//     }
+
+//     // public override void OnActionReceived(ActionBuffers actionBuffers)
+//     // {
+//     //         InterpretRayPerceptionOutput();
+//     // AdjustRewardBasedOnRays();
+//     //     if (episodeEnded || isMoving)
+//     //     {
+//     //         return;
+//     //     }
+
+//     //     int action = actionBuffers.DiscreteActions[0];
+//     //     Vector2Int moveDir = Vector2Int.zero;
+//     //     bool isRotateAction = false;
+
+//     //     switch (action)
+//     //     {
+//     //         case 0: moveDir = Vector2Int.up; break;
+//     //         case 1: moveDir = Vector2Int.down; break;
+//     //         case 2: moveDir = Vector2Int.left; break;
+//     //         case 3: moveDir = Vector2Int.right; break;
+//     //         case 4:
+//     //         case 5:
+//     //             isRotateAction = true;
+//     //             break;
+//     //         case 6: break;
+//     //         default:
+//     //             ForceLog($"Unexpected action value: {action}");
+//     //             return;
+//     //     }
+
+//     //     if (moveDir != Vector2Int.zero)
+//     //     {
+//     //         Vector2Int newCell = currentCell + moveDir;
+//     //         bool isValidMove = m_MazeGenerator.IsValidMove(currentCell, newCell, mazeIndex);
+
+//     //         if (isValidMove)
+//     //         {
+//     //             StartCoroutine(MoveToCell(newCell));
+//     //         }
+//     //         else
+//     //         {
+//     //             AddReward(-0.2f);
+//     //             ForceLog($"Hit Wall! Attempted move from {currentCell} to {newCell}");
+//     //         }
+//     //     }
+//     //     else if (isRotateAction)
+//     //     {
+//     //         float rotationAngle = (action == 4) ? -90f : 90f;
+//     //         transform.Rotate(0f, rotationAngle, 0f);
+//     //         AddReward(-0.01f);
+//     //     }
+
+//     //     if (verboseDebug)
+//     //     {
+//     //         ForceLog($"Action: {action}, CurrentCell: {currentCell}, Position: {transform.position}, " +
+//     //                   $"Rotation: {transform.eulerAngles.y}, Reward: {GetCumulativeReward()}, " +
+//     //                   $"Distance to Goal: {Vector2Int.Distance(currentCell, m_MazeGenerator.GetGoalCell(mazeIndex))}");
+//     //     }
+//     // }
+
+//     // public override void OnActionReceived(ActionBuffers actionBuffers)
+//     // {
+//     //     InterpretRayPerceptionOutput();
+//     //     AdjustRewardBasedOnRays();
+
+//     //     if (episodeEnded || isMoving)
+//     //     {
+//     //         return;
+//     //     }
+
+//     //     int action = actionBuffers.DiscreteActions[0];
+//     //     Vector2Int moveDir = Vector2Int.zero;
+
+//     //     switch (action)
+//     //     {
+//     //         case 0: moveDir = Vector2Int.up; break;
+//     //         case 1: moveDir = Vector2Int.down; break;
+//     //         case 2: moveDir = Vector2Int.left; break;
+//     //         case 3: moveDir = Vector2Int.right; break;
+//     //         case 4: break; // No movement
+//     //         default:
+//     //             ForceLog($"Unexpected action value: {action}");
+//     //             return;
+//     //     }
+
+//     //     if (moveDir != Vector2Int.zero)
+//     //     {
+//     //         Vector2Int newCell = currentCell + moveDir;
+//     //         bool isValidMove = m_MazeGenerator.IsValidMove(currentCell, newCell, mazeIndex);
+
+//     //         if (isValidMove)
+//     //         {
+//     //             StartCoroutine(MoveToCell(newCell));
+//     //         }
+//     //         else
+//     //         {
+//     //             AddReward(-0.2f);
+//     //             ForceLog($"Hit Wall! Attempted move from {currentCell} to {newCell}");
+//     //         }
+//     //     }
+
+//     //     if (verboseDebug)
+//     //     {
+//     //         ForceLog($"Action: {action}, CurrentCell: {currentCell}, Position: {transform.position}, " +
+//     //                   $"Reward: {GetCumulativeReward()}, " +
+//     //                   $"Distance to Goal: {Vector2Int.Distance(currentCell, m_MazeGenerator.GetGoalCell(mazeIndex))}");
+//     //     }
+//     // }
+//        public override void OnActionReceived(ActionBuffers actionBuffers)
+//     {
+//         int action = actionBuffers.DiscreteActions[0];
+        
+//         Vector3 moveDirection = Vector3.zero;
+
+//         switch(action)
+//         {
+//             case 0: moveDirection = Vector3.forward; break;
+//             case 1: moveDirection = Vector3.back; break;
+//             case 2: moveDirection = Vector3.left; break;
+//             case 3: moveDirection = Vector3.right; break;
+//             case 4: break; // No movement
+//         }
+
+//         // Move the agent
+//         transform.position += moveDirection * Time.deltaTime;
+
+//         // Check if goal is reached
+//         if (Vector3.Distance(transform.position, goalObject.transform.position) < 0.5f)
+//         {
+//             SetReward(10.0f);
+//             EndEpisode();
+//         }
+
+//         // Add small negative reward for each step to encourage efficiency
+//         AddReward(-0.01f);
+//     }
+
+
+//     // private IEnumerator MoveToCell(Vector2Int newCell)
+//     // {
+//     //     isMoving = true;
+//     //     Vector3 startPosition = transform.position;
+//     //     Vector3 endPosition = CellToWorldPosition(newCell);
+//     //     float elapsedTime = 0f;
+
+//     //     while (elapsedTime < moveDuration)
+//     //     {
+//     //         transform.position = Vector3.Lerp(startPosition, endPosition, elapsedTime / moveDuration);
+//     //         elapsedTime += Time.deltaTime;
+//     //         yield return null;
+//     //     }
+
+//     //     transform.position = endPosition;
+//     //     currentCell = newCell;
+//     //     isMoving = false;
+
+//     //     if (!visitedPositions.Contains(currentCell))
+//     //     {
+//     //         visitedPositions.Add(currentCell);
+//     //         AddReward(0.05f);
+//     //         ForceLog("Visited new position!");
+//     //     }
+
+//     //     float distanceToGoal = Vector2Int.Distance(currentCell, m_MazeGenerator.GetGoalCell(mazeIndex));
+//     //     float distanceReward = -distanceToGoal * 0.01f;
+
+//     //     AddReward(distanceReward);
+
+//     //     AddReward(-0.01f); // Small penalty for each move
+//     //     CheckForGoal();
+//     // }
+//         private IEnumerator MoveToCell(Vector2Int newCell)
+//     {
+//         isMoving = true;
+//         Vector3 startPosition = transform.position;
+//         Vector3 endPosition = CellToWorldPosition(newCell);
+//         float elapsedTime = 0f;
+
+//         while (elapsedTime < moveDuration)
+//         {
+//             transform.position = Vector3.Lerp(startPosition, endPosition, elapsedTime / moveDuration);
+//             elapsedTime += Time.deltaTime;
+//             yield return null;
+//         }
+
+//         transform.position = endPosition;
+//         currentCell = newCell;
+//         isMoving = false;
+
+//         // Calculate reward based on distance to goal
+//         float currentDistanceToGoal = Vector2Int.Distance(currentCell, m_MazeGenerator.GetGoalCell(mazeIndex));
+//         float distanceReward = previousDistanceToGoal - currentDistanceToGoal;
+        
+//         if (distanceReward > 0)
+//         {
+//             // Reward for moving closer to the goal
+//             AddReward(distanceReward * 0.1f);
+//         }
+//         else
+//         {
+//             // Small penalty for moving away from the goal
+//             AddReward(distanceReward * 0.05f);
+//         }
+
+//         previousDistanceToGoal = currentDistanceToGoal;
+
+//         // Small penalty for each move to encourage efficiency
+//         AddReward(-0.01f);
+
+//         if (!visitedPositions.Contains(currentCell))
+//         {
+//             visitedPositions.Add(currentCell);
+//             // Reduced exploration reward
+//             AddReward(0.01f);
+//             ForceLog("Visited new position!");
+//         }
+
+//         CheckForGoal();
+//     }
+// private void AdjustRewardBasedOnRays()
+// {
+//     var rayOutputs = raySensor.RaySensor.RayPerceptionOutput;
+    
+//     for (int i = 0; i < rayOutputs.RayOutputs.Length; i++)
+//     {
+//         var rayOutput = rayOutputs.RayOutputs[i];
+        
+//         if (rayOutput.HasHit)
+//         {
+//             if (rayOutput.HitGameObject.CompareTag("Goal"))
+//             {
+//                 // Reward for detecting the goal
+//                 float goalProximityReward = 1f - rayOutput.HitFraction; // Closer hits give higher rewards
+//                 AddReward(goalProximityReward * 0.5f);
+//             }
+//             else if (rayOutput.HitGameObject.CompareTag("Wall"))
+//             {
+//                 // Small penalty for being close to walls
+//                 float wallProximityPenalty = 1f - rayOutput.HitFraction; // Closer hits give higher penalties
+//                 AddReward(-wallProximityPenalty * 0.01f);
+//             }
+//         }
+//     }
+// }
+
+
+// private void CheckForGoal()
+//     {
+//         if (reachedGoal) return;
+
+//         if (currentCell == m_MazeGenerator.GetGoalCell(mazeIndex) || IsAtGoal())
+//         {
+//             reachedGoal = true;
+//             episodeEnded = true;
+//             ForceLog("<color=green>GOAL REACHED! Ending episode.</color>");
+//             // Increased reward for reaching the goal
+//             SetReward(100f);
+//             m_statsRecorder.Add("Goal/Reached", 1, StatAggregationMethod.Sum);
+//             EndEpisode();
+//         }
+//     }
+
+//     private bool IsAtGoal()
+//     {
+//         if (goalObject == null) return false;
+
+//         float distanceToGoal = Vector3.Distance(transform.position, goalObject.transform.position);
+//         return distanceToGoal < 0.5f; // Adjust this threshold as needed
+//     }
+
+//     private void OnTriggerEnter(Collider other)
+//     {
+//         ForceLog($"Trigger entered: {other.gameObject.name}");
+//         if (other.gameObject == goalObject && !reachedGoal)
+//         {
+//             reachedGoal = true;
+//             episodeEnded = true;
+//             ForceLog("<color=blue>GOAL REACHED via Trigger!</color>");
+//             SetReward(1f);
+//             m_statsRecorder.Add("Goal/Reached", 1, StatAggregationMethod.Sum);
+//             EndEpisode();
+//         }
+//     }
+
+//     public override void Heuristic(in ActionBuffers actionsOut)
+//     {
+//         var discreteActionsOut = actionsOut.DiscreteActions;
+//         discreteActionsOut[0] = 6;
+
+//         if (!isMoving)
+//         {
+//             if (Input.GetKeyDown(KeyCode.W)) discreteActionsOut[0] = 0;
+//             else if (Input.GetKeyDown(KeyCode.S)) discreteActionsOut[0] = 1;
+//             else if (Input.GetKeyDown(KeyCode.A)) discreteActionsOut[0] = 2;
+//             else if (Input.GetKeyDown(KeyCode.D)) discreteActionsOut[0] = 3;
+//             else if (Input.GetKeyDown(KeyCode.Q)) discreteActionsOut[0] = 4;
+//             else if (Input.GetKeyDown(KeyCode.E)) discreteActionsOut[0] = 5;
+//         }
+
+//         if (discreteActionsOut[0] != 6)
+//         {
+//             ForceLog($"Heuristic called. Action: {discreteActionsOut[0]}");
+//         }
+//     }
+
+//     private Vector3 CellToWorldPosition(Vector2Int cell)
+//     {
+//         return new Vector3(
+//             cell.x + (mazeIndex * (m_MazeGenerator.gridSize + 1)),
+//             0.5f,
+//             cell.y
+//         );
+//     }
+
+//     private Vector2Int WorldPositionToCell(Vector3 worldPosition)
+//     {
+//         return new Vector2Int(
+//             Mathf.RoundToInt(worldPosition.x - (mazeIndex * (m_MazeGenerator.gridSize + 1))),
+//             Mathf.RoundToInt(worldPosition.z)
+//         );
+//     }
+
+//     private void ForceLog(string message)
+//     {
+//         Debug.Log($"[MazeAgent {mazeIndex}] {Time.time}: {message}");
+//     }
+// }
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using Unity.MLAgents;
 using Unity.MLAgents.Actuators;
@@ -753,10 +2034,10 @@ using Unity.MLAgents.Sensors;
 
 public class MazeAgent : Agent
 {
-    public float moveSpeed = 5f;
-    public float rotateSpeed = 180f;
-    public float moveCooldown = 0.01f; // Adjust this value to control movement speed
-private float lastMoveTime = 0f;
+    public float moveDuration = 0.5f;
+    public GameObject goalObject;
+    public bool verboseDebug = true;
+    public RayPerceptionSensorComponent3D raySensor;
 
     private Rigidbody m_AgentRb;
     private MazeGenerator m_MazeGenerator;
@@ -764,11 +2045,19 @@ private float lastMoveTime = 0f;
     private int mazeIndex;
     private Vector2Int currentCell;
     private HashSet<Vector2Int> visitedPositions = new HashSet<Vector2Int>();
+    private bool isMoving = false;
+    private bool reachedGoal = false;
+    private float previousDistanceToGoal;
 
     public override void Initialize()
     {
         m_AgentRb = GetComponent<Rigidbody>();
         m_statsRecorder = Academy.Instance.StatsRecorder;
+        
+        if (m_AgentRb != null)
+        {
+            m_AgentRb.freezeRotation = true;
+        }
     }
 
     public void SetupAgent(int index, MazeGenerator generator)
@@ -785,6 +2074,16 @@ private float lastMoveTime = 0f;
             return;
         }
 
+        ResetAgent();
+        reachedGoal = false;
+        ForceLog("New episode started.");
+        previousDistanceToGoal = Vector2Int.Distance(currentCell, m_MazeGenerator.GetGoalCell(mazeIndex));
+    }
+
+    public void ResetAgent()
+    {
+        StopAllCoroutines();
+        isMoving = false;
         visitedPositions.Clear();
         currentCell = m_MazeGenerator.GetStartCell(mazeIndex);
         transform.position = CellToWorldPosition(currentCell);
@@ -795,237 +2094,233 @@ private float lastMoveTime = 0f;
             m_AgentRb.velocity = Vector3.zero;
             m_AgentRb.angularVelocity = Vector3.zero;
         }
-        else
-        {
-            Debug.LogWarning("Rigidbody component is missing on the agent.");
-        }
 
         m_statsRecorder.Add("Goal/Reached", 0, StatAggregationMethod.Sum);
 
-        Debug.Log($"Episode started. Start cell: {currentCell}, Position: {transform.position}");
+        ForceLog($"Agent reset. Start cell: {currentCell}, Goal cell: {m_MazeGenerator.GetGoalCell(mazeIndex)}");
     }
 
     public override void CollectObservations(VectorSensor sensor)
     {
-        // Add observations here if needed
-        sensor.AddObservation(transform.position);
-        sensor.AddObservation(transform.forward);
-        Vector2Int goalCell = m_MazeGenerator.GetGoalCell(mazeIndex);
-        sensor.AddObservation((Vector2)goalCell - (Vector2)currentCell);
-    }
-    private List<Vector2Int> GetValidAdjacentCells(Vector2Int cell)
-{
-    List<Vector2Int> validMoves = new List<Vector2Int>();
-    Vector2Int[] directions = { Vector2Int.up, Vector2Int.down, Vector2Int.left, Vector2Int.right };
-
-    foreach (Vector2Int dir in directions)
-    {
-        Vector2Int adjacentCell = cell + dir;
-        if (m_MazeGenerator.IsValidMove(cell, adjacentCell, mazeIndex))
+        if (goalObject != null)
         {
-            validMoves.Add(adjacentCell);
+            Vector3 relativePosition = goalObject.transform.localPosition - transform.localPosition;
+            sensor.AddObservation(relativePosition);
+        }
+
+        sensor.AddObservation(transform.localPosition);
+
+        // The ray perception results are automatically collected by ML-Agents
+    }
+
+    private void InterpretRayPerceptionOutput()
+    {
+        if (raySensor == null || raySensor.RaySensor == null || raySensor.RaySensor.RayPerceptionOutput == null)
+        {
+            return;
+        }
+
+        var rayOutputs = raySensor.RaySensor.RayPerceptionOutput.RayOutputs;
+        for (int i = 0; i < rayOutputs.Length; i++)
+        {
+            var rayOutput = rayOutputs[i];
+            if (rayOutput.HasHit && rayOutput.HitGameObject != null)
+            {
+                string hitObjectTag = rayOutput.HitGameObject.tag;
+                float hitDistance = rayOutput.HitFraction;
+
+                if (verboseDebug)
+                {
+                    ForceLog($"Ray {i} hit {hitObjectTag} at distance {hitDistance}");
+                }
+            }
         }
     }
 
-    return validMoves;
-}
-
-//     public override void OnActionReceived(ActionBuffers actionBuffers)
-// {
-//     int action = actionBuffers.DiscreteActions[0];
-//     Vector2Int moveDir = Vector2Int.zero;
-//     float rotateAmount = 0f;
-
-//     switch (action)
-//     {
-//         case 0: moveDir = Vector2Int.up; break;    // Forward
-//         case 1: moveDir = Vector2Int.down; break;  // Backward
-//         case 2: moveDir = Vector2Int.left; break;  // Left
-//         case 3: moveDir = Vector2Int.right; break; // Right
-//         case 4: rotateAmount = -1f; break;         // Rotate left
-//         case 5: rotateAmount = 1f; break;          // Rotate right
-//         case 6: break; // No action
-//         default: Debug.LogWarning($"Unexpected action value: {action}"); break;
-//     }
-
-//     Vector2Int previousCell = currentCell;
-//     float previousDistanceToGoal = Vector2Int.Distance(previousCell, m_MazeGenerator.GetGoalCell(mazeIndex));
-
-//     // Move
-//     if (moveDir != Vector2Int.zero)
-//     {
-//         Vector2Int newCell = currentCell + moveDir;
-//         bool isValidMove = m_MazeGenerator.IsValidMove(currentCell, newCell, mazeIndex);
-
-//         Vector3 startPos = CellToWorldPosition(currentCell);
-//         Vector3 endPos = CellToWorldPosition(newCell);
-//         Debug.DrawLine(startPos, endPos, isValidMove ? Color.green : Color.red, 0.5f);
-
-//         if (isValidMove)
-//         {
-//             currentCell = newCell;
-//             Vector3 newPosition = CellToWorldPosition(currentCell);
-//             transform.position = newPosition;
-//             m_AgentRb.MovePosition(newPosition);
-
-//             if (!visitedPositions.Contains(currentCell))
-//             {
-//                 visitedPositions.Add(currentCell);
-//                 AddReward(0.05f);
-//                 Debug.Log("Visited new position!");
-//             }
-
-//             float currentDistanceToGoal = Vector2Int.Distance(currentCell, m_MazeGenerator.GetGoalCell(mazeIndex));
-//             float distanceReward = previousDistanceToGoal - currentDistanceToGoal;
-//             AddReward(distanceReward * 0.1f);
-
-//             if (currentCell == m_MazeGenerator.GetGoalCell(mazeIndex))
-//             {
-//                 SetReward(1f);
-//                 m_statsRecorder.Add("Goal/Reached", 1, StatAggregationMethod.Sum);
-//                 EndEpisode();
-//             }
-//         }
-//         else
-//         {
-//             AddReward(-0.2f); // Penalty for hitting a wall
-//             Debug.Log($"Hit Wall! Attempted move from {currentCell} to {newCell}");
-//         }
-//     }
-
-//     // Rotate
-//     if (rotateAmount != 0f)
-//     {
-//         float rotationAngle = rotateAmount * rotateSpeed * Time.fixedDeltaTime;
-//         transform.Rotate(0f, rotationAngle, 0f);
-//     }
-
-//     // Small penalty for each step to encourage efficiency
-//     AddReward(-0.01f);
-
-//     Debug.Log($"Action: {action}, Move: {moveDir}, Rotate: {rotateAmount}, CurrentCell: {currentCell}, Position: {transform.position}, Reward: {GetCumulativeReward()}");
-// }
-// 
-
-public override void OnActionReceived(ActionBuffers actionBuffers)
-{
-    // Check if we're still in cooldown
-    if (Time.time - lastMoveTime < moveCooldown)
+    public override void OnActionReceived(ActionBuffers actionBuffers)
     {
-        return;
-    }
-
-    int action = actionBuffers.DiscreteActions[0];
-    Vector2Int moveDir = Vector2Int.zero;
-    bool isRotateAction = false;
-
-    switch (action)
-    {
-        case 0: moveDir = Vector2Int.up; break;    // Forward
-        case 1: moveDir = Vector2Int.down; break;  // Backward
-        case 2: moveDir = Vector2Int.left; break;  // Left
-        case 3: moveDir = Vector2Int.right; break; // Right
-        case 4: // Rotate left
-        case 5: // Rotate right
-            isRotateAction = true;
-            break;
-        case 6: break; // No action
-        default:
-            Debug.LogWarning($"Unexpected action value: {action}");
-            return;
-    }
-
-    bool actionTaken = false;
-
-    if (moveDir != Vector2Int.zero)
-    {
-        Vector2Int newCell = currentCell + moveDir;
-        bool isValidMove = m_MazeGenerator.IsValidMove(currentCell, newCell, mazeIndex);
-
-        Vector3 startPos = CellToWorldPosition(currentCell);
-        Vector3 endPos = CellToWorldPosition(newCell);
-        Debug.DrawLine(startPos, endPos, isValidMove ? Color.green : Color.red, moveCooldown);
-
-        if (isValidMove)
+        if (isMoving || reachedGoal)
         {
-            currentCell = newCell;
-            Vector3 newPosition = CellToWorldPosition(currentCell);
-            transform.position = newPosition;
-            m_AgentRb.MovePosition(newPosition);
-            actionTaken = true;
+            return;
+        }
 
-            if (!visitedPositions.Contains(currentCell))
+        InterpretRayPerceptionOutput();
+        AdjustRewardBasedOnRays();
+
+        int action = actionBuffers.DiscreteActions[0];
+        Vector2Int moveDir = Vector2Int.zero;
+
+        switch (action)
+        {
+            case 0: moveDir = Vector2Int.up; break;
+            case 1: moveDir = Vector2Int.down; break;
+            case 2: moveDir = Vector2Int.left; break;
+            case 3: moveDir = Vector2Int.right; break;
+            case 4: break; // No movement
+            default:
+                ForceLog($"Unexpected action value: {action}");
+                return;
+        }
+
+        if (moveDir != Vector2Int.zero)
+        {
+            Vector2Int newCell = currentCell + moveDir;
+            bool isValidMove = m_MazeGenerator.IsValidMove(currentCell, newCell, mazeIndex);
+
+            if (isValidMove)
             {
-                visitedPositions.Add(currentCell);
-                AddReward(0.05f);
-                Debug.Log("Visited new position!");
+                StartCoroutine(MoveToCell(newCell));
             }
-
-            float distanceToGoal = Vector2Int.Distance(currentCell, m_MazeGenerator.GetGoalCell(mazeIndex));
-            float distanceReward = -distanceToGoal * 0.01f; // Small reward based on distance to goal
-            AddReward(distanceReward);
-
-            if (currentCell == m_MazeGenerator.GetGoalCell(mazeIndex))
+            else
             {
-                SetReward(1f);
-                m_statsRecorder.Add("Goal/Reached", 1, StatAggregationMethod.Sum);
-                EndEpisode();
+                AddReward(-0.2f);
+                ForceLog($"Hit Wall! Attempted move from {currentCell} to {newCell}");
             }
+        }
+
+        if (verboseDebug)
+        {
+            ForceLog($"Action: {action}, CurrentCell: {currentCell}, Position: {transform.position}, " +
+                      $"Reward: {GetCumulativeReward()}, " +
+                      $"Distance to Goal: {Vector2Int.Distance(currentCell, m_MazeGenerator.GetGoalCell(mazeIndex))}");
+        }
+    }
+
+    private IEnumerator MoveToCell(Vector2Int newCell)
+    {
+        isMoving = true;
+        Vector3 startPosition = transform.position;
+        Vector3 endPosition = CellToWorldPosition(newCell);
+        float elapsedTime = 0f;
+
+        while (elapsedTime < moveDuration)
+        {
+            transform.position = Vector3.Lerp(startPosition, endPosition, elapsedTime / moveDuration);
+            elapsedTime += Time.deltaTime;
+            yield return null;
+        }
+
+        transform.position = endPosition;
+        currentCell = newCell;
+        isMoving = false;
+
+        float currentDistanceToGoal = Vector2Int.Distance(currentCell, m_MazeGenerator.GetGoalCell(mazeIndex));
+        float distanceReward = previousDistanceToGoal - currentDistanceToGoal;
+        
+        if (distanceReward > 0)
+        {
+            AddReward(distanceReward * 10f);
         }
         else
         {
-            AddReward(-0.2f); // Penalty for hitting a wall
-            Debug.Log($"Hit Wall! Attempted move from {currentCell} to {newCell}");
+            AddReward(distanceReward * 0.5f);
+        }
+
+        previousDistanceToGoal = currentDistanceToGoal;
+
+        AddReward(-0.01f);
+
+        if (!visitedPositions.Contains(currentCell))
+        {
+            visitedPositions.Add(currentCell);
+            AddReward(0.01f);
+            ForceLog("Visited new position!");
+        }
+
+        CheckForGoal();
+    }
+
+    private void AdjustRewardBasedOnRays()
+    {
+        if (raySensor == null || raySensor.RaySensor == null || raySensor.RaySensor.RayPerceptionOutput == null)
+        {
+            return;
+        }
+
+        var rayOutputs = raySensor.RaySensor.RayPerceptionOutput.RayOutputs;
+        
+        for (int i = 0; i < rayOutputs.Length; i++)
+        {
+            var rayOutput = rayOutputs[i];
+            
+            if (rayOutput.HasHit && rayOutput.HitGameObject != null)
+            {
+                if (rayOutput.HitGameObject.CompareTag("Goal"))
+                {
+                    ForceLog("<color=green>GOAL hit.</color>");
+                    float goalProximityReward = 1f - rayOutput.HitFraction;
+                    AddReward(goalProximityReward * 5f);
+                }
+                else if (rayOutput.HitGameObject.CompareTag("Wall"))
+                {
+                    float wallProximityPenalty = 1f - rayOutput.HitFraction;
+                    AddReward(-wallProximityPenalty * 0.01f);
+                }
+            }
         }
     }
-    else if (isRotateAction)
+
+    private void CheckForGoal()
     {
-        float rotationAngle = (action == 4) ? -90f : 90f;
-        transform.Rotate(0f, rotationAngle, 0f);
-        actionTaken = true;
-        AddReward(-0.01f); // Small penalty for rotation to discourage unnecessary spinning
+        if (reachedGoal) return;
+
+        if (currentCell == m_MazeGenerator.GetGoalCell(mazeIndex) || IsAtGoal())
+        {
+            reachedGoal = true;
+            ForceLog("<color=green>GOAL REACHED! Ending episode.</color>");
+            SetReward(1000f);
+            m_statsRecorder.Add("Goal/Reached", 1, StatAggregationMethod.Sum);
+            EndEpisode();
+        }
     }
 
-    if (actionTaken)
+    private bool IsAtGoal()
     {
-        lastMoveTime = Time.time;
-        AddReward(-0.01f); // Small penalty for each action to encourage efficiency
+        if (goalObject == null) return false;
+        float distanceToGoal = Vector3.Distance(transform.position, goalObject.transform.position);
+        return distanceToGoal < 0.5f;
     }
 
-    // Debugging information
-    Debug.Log($"Action: {action}, CurrentCell: {currentCell}, Position: {transform.position}, " +
-              $"Rotation: {transform.eulerAngles.y}, Reward: {GetCumulativeReward()}, " +
-              $"Distance to Goal: {Vector2Int.Distance(currentCell, m_MazeGenerator.GetGoalCell(mazeIndex))}");
-}
-
-public override void Heuristic(in ActionBuffers actionsOut)
-{
-    var discreteActionsOut = actionsOut.DiscreteActions;
-    discreteActionsOut[0] = 6; // Default to no action
-
-    if (Time.time - lastMoveTime >= moveCooldown)
+    private void OnTriggerEnter(Collider other)
     {
-        if (Input.GetKeyDown(KeyCode.W)) discreteActionsOut[0] = 0;
-        else if (Input.GetKeyDown(KeyCode.S)) discreteActionsOut[0] = 1;
-        else if (Input.GetKeyDown(KeyCode.A)) discreteActionsOut[0] = 2;
-        else if (Input.GetKeyDown(KeyCode.D)) discreteActionsOut[0] = 3;
-        else if (Input.GetKeyDown(KeyCode.Q)) discreteActionsOut[0] = 4;
-        else if (Input.GetKeyDown(KeyCode.E)) discreteActionsOut[0] = 5;
+        ForceLog($"Trigger entered: {other.gameObject.name}");
+        if (other.gameObject == goalObject && !reachedGoal)
+        {
+            reachedGoal = true;
+            ForceLog("<color=blue>GOAL REACHED via Trigger!</color>");
+            SetReward(100f);
+            m_statsRecorder.Add("Goal/Reached", 1, StatAggregationMethod.Sum);
+            EndEpisode();
+        }
     }
 
-    if (discreteActionsOut[0] != 6)
+    public override void Heuristic(in ActionBuffers actionsOut)
     {
-        Debug.Log($"Heuristic called. Action: {discreteActionsOut[0]}");
+        var discreteActionsOut = actionsOut.DiscreteActions;
+        discreteActionsOut[0] = 4; // Default to no movement
+
+        if (!isMoving)
+        {
+            if (Input.GetKeyDown(KeyCode.W)) discreteActionsOut[0] = 0;
+            else if (Input.GetKeyDown(KeyCode.S)) discreteActionsOut[0] = 1;
+            else if (Input.GetKeyDown(KeyCode.A)) discreteActionsOut[0] = 2;
+            else if (Input.GetKeyDown(KeyCode.D)) discreteActionsOut[0] = 3;
+        }
+
+        if (discreteActionsOut[0] != 4)
+        {
+            ForceLog($"Heuristic called. Action: {discreteActionsOut[0]}");
+        }
     }
-}
-private Vector3 CellToWorldPosition(Vector2Int cell)
-{
-    return new Vector3(
-        cell.x + (mazeIndex * (m_MazeGenerator.gridSize + 1)),
-        0.5f, // Fixed height
-        cell.y
-    );
-}
+
+    private Vector3 CellToWorldPosition(Vector2Int cell)
+    {
+        return new Vector3(
+            cell.x + (mazeIndex * (m_MazeGenerator.gridSize + 1)),
+            0.5f,
+            cell.y
+        );
+    }
 
     private Vector2Int WorldPositionToCell(Vector3 worldPosition)
     {
@@ -1035,36 +2330,8 @@ private Vector3 CellToWorldPosition(Vector2Int cell)
         );
     }
 
-private void FixedUpdate()
-{
-    // Ensure the agent stays aligned to the grid
-    Vector3 snappedPosition = CellToWorldPosition(currentCell);
-    transform.position = snappedPosition;
-    m_AgentRb.MovePosition(snappedPosition);
-
-    // Unstuck mechanism (if needed)
-    if (m_AgentRb.velocity.magnitude < 0.01f)
+    private void ForceLog(string message)
     {
-        stuckTime += Time.fixedDeltaTime;
-        if (stuckTime > 3f)
-        {
-            Vector2Int randomDirection = new Vector2Int(Random.Range(-1, 2), Random.Range(-1, 2));
-            Vector2Int newCell = currentCell + randomDirection;
-            if (m_MazeGenerator.IsValidMove(currentCell, newCell, mazeIndex))
-            {
-                currentCell = newCell;
-                transform.position = CellToWorldPosition(currentCell);
-                m_AgentRb.MovePosition(transform.position);
-                stuckTime = 0f;
-                Debug.Log("Agent unstuck!");
-            }
-        }
+        Debug.Log($"[MazeAgent {mazeIndex}] {Time.time}: {message}");
     }
-    else
-    {
-        stuckTime = 0f;
-    }
-}
-
-    private float stuckTime = 0f;
 }

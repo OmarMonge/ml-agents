@@ -1738,7 +1738,7 @@ void PlaceWall(Vector2Int current, Vector2Int neighbor, int mazeIndex)
         Vector3 startPosition = new Vector3(startCells[mazeIndex].x + (mazeIndex * (gridSize + 1)), 0, startCells[mazeIndex].y);
         Instantiate(startPrefab, startPosition, Quaternion.identity);
 
-        Vector3 goalPosition = new Vector3(goalCells[mazeIndex].x + (mazeIndex * (gridSize + 1)), 0, goalCells[mazeIndex].y);
+        Vector3 goalPosition = new Vector3(goalCells[mazeIndex].x + (mazeIndex * (gridSize + 1)), 0.5f, goalCells[mazeIndex].y);
         Instantiate(goalPrefab, goalPosition, Quaternion.identity);
     }
 

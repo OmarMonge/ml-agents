@@ -15,6 +15,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 655114541702373044, guid: db701c864ccbc8d46931f176ec1ee3b0,
         type: 3}
+      propertyPath: m_RayLength
+      value: 123
+      objectReference: {fileID: 0}
+    - target: {fileID: 655114541702373044, guid: db701c864ccbc8d46931f176ec1ee3b0,
+        type: 3}
       propertyPath: m_MaxRayDegrees
       value: 148
       objectReference: {fileID: 0}
@@ -22,6 +27,16 @@ PrefabInstance:
         type: 3}
       propertyPath: m_RaysPerDirection
       value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 655114541702373044, guid: db701c864ccbc8d46931f176ec1ee3b0,
+        type: 3}
+      propertyPath: m_EndVerticalOffset
+      value: 5.6
+      objectReference: {fileID: 0}
+    - target: {fileID: 655114541702373044, guid: db701c864ccbc8d46931f176ec1ee3b0,
+        type: 3}
+      propertyPath: m_StartVerticalOffset
+      value: 0.3
       objectReference: {fileID: 0}
     - target: {fileID: 655114541702373044, guid: db701c864ccbc8d46931f176ec1ee3b0,
         type: 3}
@@ -98,7 +113,8 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Model
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 5022602860645237092, guid: 1b26b417a78cbd54899e3d257a6ca5f4,
+        type: 3}
     - target: {fileID: 4679680190928016185, guid: db701c864ccbc8d46931f176ec1ee3b0,
         type: 3}
       propertyPath: m_BehaviorName
@@ -111,13 +127,23 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4679680190928016185, guid: db701c864ccbc8d46931f176ec1ee3b0,
         type: 3}
+      propertyPath: m_BrainParameters.VectorObservationSize
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 4679680190928016185, guid: db701c864ccbc8d46931f176ec1ee3b0,
+        type: 3}
+      propertyPath: m_BrainParameters.NumStackedVectorObservations
+      value: 30
+      objectReference: {fileID: 0}
+    - target: {fileID: 4679680190928016185, guid: db701c864ccbc8d46931f176ec1ee3b0,
+        type: 3}
       propertyPath: m_BrainParameters.VectorActionSize.Array.data[0]
-      value: 6
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 4679680190928016185, guid: db701c864ccbc8d46931f176ec1ee3b0,
         type: 3}
       propertyPath: m_BrainParameters.m_ActionSpec.BranchSizes.Array.data[0]
-      value: 6
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 7776960393463621246, guid: db701c864ccbc8d46931f176ec1ee3b0,
         type: 3}
@@ -199,6 +225,18 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: 620375142107917349}
   m_SourcePrefab: {fileID: 100100000, guid: db701c864ccbc8d46931f176ec1ee3b0, type: 3}
+--- !u!114 &4656817563407428584 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 655114541702373044, guid: db701c864ccbc8d46931f176ec1ee3b0,
+    type: 3}
+  m_PrefabInstance: {fileID: 5311777862899987804}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6123785093853168365}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6bb6b867a41448888c1cd4f99643ad71, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &6123785093853168365 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 2110842192084645809, guid: db701c864ccbc8d46931f176ec1ee3b0,
@@ -220,7 +258,9 @@ MonoBehaviour:
   agentParameters:
     maxStep: 0
   hasUpgradedFromAgentParameters: 1
-  MaxStep: 100000
-  moveSpeed: 1
-  rotateSpeed: 150
-  moveCooldown: 0.01
+  MaxStep: 5000
+  moveDuration: 0.5
+  goalObject: {fileID: 4463515571777698136, guid: 80205edf94616ba49ae6c3b3d048ef42,
+    type: 3}
+  verboseDebug: 1
+  raySensor: {fileID: 4656817563407428584}
